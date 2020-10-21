@@ -1,8 +1,7 @@
 import logging
 import os
 from sys import stderr, stdin
-from typing import Callable, Iterator, List, Optional
-from gensim import utils
+from typing import Iterator, List
 logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
 class MyCorpus(object):
@@ -19,11 +18,11 @@ class MyCorpus(object):
                 yield line
         else:
             for file in os.listdir(self.corpus_directory):
-                for line in open(file):
+                for line in open(os.path.join(self.corpus_directory, file)):
                     yield line
 
     def __init__(self, from_stdin: bool = True, corpus_directory: str = None) -> None:
-        self.from_stdin = True
+        self.from_stdin = from_stdin if corpus_directory is None else False
         self.corpus_directory = corpus_directory
 
     def __iter__(self) -> Iterator[List[str]]:
