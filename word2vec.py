@@ -2,6 +2,7 @@ import logging
 import os
 from sys import stderr, stdin
 from typing import Iterator, List
+import gensim.models
 logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
 class MyCorpus(object):
@@ -37,9 +38,12 @@ class MyCorpus(object):
 
 def main():
     corpus = MyCorpus()
-    print("Reading from stdin", file=stderr)
-    for line in corpus:
-        print(line)
+    
+    # print("Reading from stdin", file=stderr)
+    # for line in corpus:
+    #     print(line)
+    
+    model = gensim.models.Word2Vec(sentences=corpus)
 
 if __name__ == "__main__":
     main()
