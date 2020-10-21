@@ -1,6 +1,7 @@
 import logging
 import os
 from sys import argv, stderr
+from text_from_csv import open_csv
 from typing import Generator, Iterator, List
 import gensim.models
 from itertools import chain
@@ -13,9 +14,12 @@ class MyCorpus(object):
         self.corpus_directory = corpus_directory
 
     def __iter__(self) -> Iterator[List[str]]:
+        # get file names of the corpus
         corpus = (os.path.join(self.corpus_directory, file) for file in os.listdir(self.corpus_directory))
+        corpus = (only_csv for only_csv in corpus if only_csv.endswith(".csv"))
         for file in corpus:
-            for line in self.__read_lines(file):
+            for line in open_csv(file):
+                # preprocessing?
                 yield line.split()
 
     def __read_lines(self, path: str) -> Iterator[str]:
