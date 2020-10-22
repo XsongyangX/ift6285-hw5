@@ -7,6 +7,7 @@ def main():
         for line in open_csv(file.strip()):
             print(line)
 
+csv.field_size_limit(pow(2,32))
 def open_csv(path: str):
     """Reads the text value of the csv blog line by line
 
