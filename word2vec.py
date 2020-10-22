@@ -4,7 +4,7 @@ from sys import argv, stderr
 from text_from_csv import open_csv
 from typing import Generator, Iterator, List
 import gensim.models
-from itertools import chain
+import nltk
 logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
 class MyCorpus(object):
@@ -20,7 +20,7 @@ class MyCorpus(object):
         for file in corpus:
             for line in open_csv(file):
                 # preprocessing?
-                yield line.split()
+                yield nltk.word_tokenize(line)
 
     def __read_lines(self, path: str) -> Iterator[str]:
         for line in open(path):
@@ -42,6 +42,8 @@ def main():
         if i == 10:
             break
         print(word)
+    
+    model.save("model")
 
 if __name__ == "__main__":
     main()

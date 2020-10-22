@@ -1,5 +1,6 @@
 import csv
 from sys import stdin
+import time
 
 def main():
     for file in stdin:
@@ -15,10 +16,17 @@ def open_csv(path: str):
     Yields:
         str: Text entry of a row in the csv
     """
+    log_time()
     with open(path, mode='r') as csv_file:
         blogreader = csv.reader(csv_file)
         for row in blogreader:
             yield row[-1]
+
+start_time = time.time()
+open("time.csv", 'w').close()
+def log_time():
+    with open("time.csv", 'a') as file:
+        file.write("{}\n".format(time.time() - start_time))
 
 if __name__ == "__main__":
     main()
