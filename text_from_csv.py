@@ -1,6 +1,7 @@
 import csv
 from sys import stdin
 import time
+import pandas as pd
 
 def main():
     for file in stdin:
@@ -18,10 +19,13 @@ def open_csv(path: str):
         str: Text entry of a row in the csv
     """
     log_time()
-    with open(path, mode='r') as csv_file:
-        blogreader = csv.reader(csv_file)
-        for row in blogreader:
-            yield row[-1]
+    # with open(path, mode='r') as csv_file:
+    #     blogreader = csv.reader(csv_file)
+    #     for row in blogreader:
+    #         yield row[-1]
+    dataframe = pd.read_csv(path, names=('ID', 'Gender', 'Age', 'Zodiac', 'Blog'))
+    for row in dataframe['Blog']:
+        yield row
 
 start_time = time.time()
 open("time.csv", 'w').close()

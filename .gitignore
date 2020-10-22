@@ -6,3 +6,4 @@ data/
 model
 time.csv
 default_time.csv
+*.png
