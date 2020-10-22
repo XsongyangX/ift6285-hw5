@@ -3,7 +3,6 @@ __pycache__
 .vscode/
 
 data/
-model
-time.csv
-default_time.csv
+*.model
+*.csv
 *.png

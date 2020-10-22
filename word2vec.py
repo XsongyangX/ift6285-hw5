@@ -1,10 +1,11 @@
 import logging
 import os
 from sys import argv, stderr
-from text_from_csv import open_csv
+from text_from_csv import open_csv, Timer
 from typing import Generator, Iterator, List
 import gensim.models
 import nltk
+import argparse
 logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
 class MyCorpus(object):
@@ -26,24 +27,44 @@ class MyCorpus(object):
         for line in open(path):
             yield line
 
+def parse():
+    parser = argparse.ArgumentParser(description="Learns a word2vec model")
+
+    parser.add_argument('corpus_directory',\
+        help="Path to the corpus directory")
+
+    parser.add_argument('--size', type=int, default=100,\
+        help="Dimensionality of the word vectors. (Default is 100)")
+    
+    parser.add_argument('--window', type=int, default=5,\
+        help="Maximum distance between the current and predicted word within a sentence. (Default is 5)")
+    
+    parser.add_argument('--negative', type=int, default=5,\
+        help="If > 0, negative sampling will be used, the int for negative specifies how many “noise words” should be drawn (usually between 5-20). If set to 0, no negative sampling is used. (Default is 5)")
+
+    return parser.parse_args()
+
 def main():
-    if len(argv) != 2:
-        print("Requires one argument: path to corpus directory")
-        exit(1)
-    corpus = MyCorpus(argv[1])
     
-    # print("Reading from stdin", file=stderr)
-    # for line in corpus:
-    #     print(line)
+    args = parse()
+
+    Timer('time_size{size}_window{window}_negative{negative}.csv'\
+        .format(size=args.size, window=args.window, negative=args.negative))
+
+    corpus = MyCorpus(args.corpus_directory)
     
-    model = gensim.models.Word2Vec(sentences=list(corpus))
+    model = gensim.models.Word2Vec(sentences=corpus,\
+        size=args.size,
+        window=args.window,
+        negative=args.negative)
 
     for i, word in enumerate(model.wv.vocab):
         if i == 10:
             break
         print(word)
     
-    model.save("model")
+    model.save('model_size{size}_window{window}_negative{negative}.model'\
+        .format(size=args.size, window=args.window, negative=args.negative))
 
 if __name__ == "__main__":
     main()
