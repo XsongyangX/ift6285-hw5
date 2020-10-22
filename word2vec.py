@@ -6,7 +6,7 @@ from typing import Generator, Iterator, List
 import gensim.models
 import nltk
 import argparse
-logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
+logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.WARN)
 
 class MyCorpus(object):
     """An interator that yields sentences (lists of str)."""
@@ -65,6 +65,8 @@ def main():
     
     model.save('model_size{size}_window{window}_negative{negative}.model'\
         .format(size=args.size, window=args.window, negative=args.negative))
+
+    Timer.get_current_timer().block_until_logged()
 
 if __name__ == "__main__":
     main()

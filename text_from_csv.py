@@ -1,6 +1,8 @@
-import csv
+from queue import Queue
+import threading
 from sys import stdin
 import time
+from typing import List
 import pandas as pd
 
 def main():
@@ -17,7 +19,7 @@ def open_csv(path: str):
     Yields:
         str: Text entry of a row in the csv
     """
-    Timer.get_current_timer().log()
+    Timer.get_current_timer().log(path)
     # with open(path, mode='r') as csv_file:
     #     blogreader = csv.reader(csv_file)
     #     for row in blogreader:
@@ -54,12 +56,35 @@ class Timer:
         Timer.is_timing = True
         Timer.__instance = self
 
-    def log(self):
+        # to keep track of progress in reading files
+        self.__current_files: List[str] = []
+
+        # multithreading
+        self.queue : Queue = Queue()
+        def background_logger():
+            while True:
+                self.queue.get()
+                with open(self.path_to_log, 'a') as time_log:
+                    time_log.write("{}\n".format(time.time() - self.start))
+                self.queue.task_done()
+        threading.Thread(target=background_logger, daemon=True).start()
+
+
+    def log(self, current_file: str):
         """
         Logs the elapsed time since instantiation
         """
-        with open(self.path_to_log, 'a') as time_log:
-            time_log.write("{}\n".format(time.time() - self.start))
+        if current_file in self.__current_files:
+            return
+        else:
+            self.__current_files.append(current_file)
+            self.__current_files = self.__current_files[-5:]
+
+        # enqueue the request
+        self.queue.put(None) # dummy value
+    
+    def block_until_logged(self):
+        self.queue.join()
 
 if __name__ == "__main__":
     main()
