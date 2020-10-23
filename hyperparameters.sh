@@ -10,7 +10,7 @@ for i in "${sizes[@]}"; do
     for j in "${windows[@]}"; do
         for k in "${negatives[@]}"; do
             
-            pkscreen ssh ens -J arcade bash $PWD/word2vec.sh $i $j $k
+            pkscreen ssh ens -J arcade bash $PWD/word2vec.sh $i $j $k &
         done
     done
 done
