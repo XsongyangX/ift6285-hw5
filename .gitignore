@@ -3,8 +3,10 @@ __pycache__
 .vscode/
 
 data/
+logs/
 *.model
 *.csv
 *.png
 *.log
 *.npy
+*.tar.*
