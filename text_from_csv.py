@@ -19,7 +19,8 @@ def open_csv(path: str):
     Yields:
         str: Text entry of a row in the csv
     """
-    Timer.get_current_timer().log(path)
+    if Timer.is_timing:
+        Timer.get_current_timer().log()
     # with open(path, mode='r') as csv_file:
     #     blogreader = csv.reader(csv_file)
     #     for row in blogreader:
@@ -70,16 +71,7 @@ class Timer:
         threading.Thread(target=background_logger, daemon=True).start()
 
 
-    def log(self, current_file: str):
-        """
-        Logs the elapsed time since instantiation
-        """
-        if current_file in self.__current_files:
-            return
-        else:
-            self.__current_files.append(current_file)
-            self.__current_files = self.__current_files[-5:]
-
+    def log(self):
         # enqueue the request
         self.queue.put(None) # dummy value
     

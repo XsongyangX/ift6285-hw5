@@ -6,19 +6,21 @@ from typing import Generator, Iterator, List
 import gensim.models
 import nltk
 import argparse
-logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.WARN)
+logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
 class MyCorpus(object):
     """An interator that yields sentences (lists of str)."""
 
-    def __init__(self, corpus_directory: str) -> None:
+    def __init__(self, corpus_directory: str, blog_count: int=None):
         self.corpus_directory = corpus_directory
+        self.blog_count = blog_count
 
     def __iter__(self) -> Iterator[List[str]]:
         # get file names of the corpus
         corpus = (os.path.join(self.corpus_directory, file) for file in os.listdir(self.corpus_directory))
-        corpus = (only_csv for only_csv in corpus if only_csv.endswith(".csv"))
-        for file in corpus:
+        only_csv = [only_csv for only_csv in corpus if only_csv.endswith(".csv")]
+        pruned = only_csv[:self.blog_count] if self.blog_count is not None else only_csv
+        for file in pruned:
             for line in open_csv(file):
                 # preprocessing?
                 yield nltk.word_tokenize(line)
@@ -42,17 +44,25 @@ def parse():
     parser.add_argument('--negative', type=int, default=5,\
         help="If > 0, negative sampling will be used, the int for negative specifies how many “noise words” should be drawn (usually between 5-20). If set to 0, no negative sampling is used. (Default is 5)")
 
+    parser.add_argument('--blogcount', metavar='n',type=int, default=None,\
+        help="How many blogs to digest. Default is all blogs.")
+
+    parser.add_argument('--time', action='store_const', const=True, default=False,\
+        help="Whether to time file by file. It might use too much memory. Default is no timing.")
+
     return parser.parse_args()
 
 def main():
     
     args = parse()
 
-    Timer('time_size{size}_window{window}_negative{negative}.csv'\
-        .format(size=args.size, window=args.window, negative=args.negative))
-
-    corpus = MyCorpus(args.corpus_directory)
+    corpus = MyCorpus(args.corpus_directory, args.blogcount)
     
+    if args.time:
+        Timer('time_size{size}_window{window}_negative{negative}.csv'\
+            .format(size=args.size, window=args.window, negative=args.negative))
+        corpus = list(corpus)
+
     model = gensim.models.Word2Vec(sentences=corpus,\
         size=args.size,
         window=args.window,
