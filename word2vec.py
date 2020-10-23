@@ -76,7 +76,8 @@ def main():
     model.save('model_size{size}_window{window}_negative{negative}.model'\
         .format(size=args.size, window=args.window, negative=args.negative))
 
-    Timer.get_current_timer().block_until_logged()
+    if Timer.is_timing:
+        Timer.get_current_timer().block_until_logged()
 
 if __name__ == "__main__":
     main()
