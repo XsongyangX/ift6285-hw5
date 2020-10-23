@@ -6,3 +6,5 @@ data/
 *.model
 *.csv
 *.png
+*.log
+*.npy

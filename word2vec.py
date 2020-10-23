@@ -63,7 +63,7 @@ def main():
             .format(size=args.size, window=args.window, negative=args.negative))
         corpus = list(corpus)
 
-    model = gensim.models.Word2Vec(sentences=corpus,\
+    model = gensim.models.Word2Vec(sentences=list(corpus),\
         size=args.size,
         window=args.window,
         negative=args.negative)
